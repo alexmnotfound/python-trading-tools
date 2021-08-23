@@ -177,3 +177,4 @@ def addEMA(data, n):
 def addFW(data, n):
     data['fw_' + str(n)] = (data.Close.shift(-n) / data.AdjClose - 1) * 100
     return data
+
