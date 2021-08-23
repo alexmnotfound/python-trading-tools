@@ -1,3 +1,9 @@
+"""
+Armado de DataFrame y exportación a CSV de histórico de precios en Binance para distintos intervalos
+
+@author: alexmnotfound
+"""
+
 import pandas as pd
 import requests
 import os
