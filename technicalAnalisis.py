@@ -79,36 +79,6 @@ def getDataExcel(ticker, timeframe):
     return data
 
 
-def ajustarOHLC(data):
-    '''
-    Toma un DataFrame Open, High, Low, Close, AdjClose y devuelve el OHLC Ajustado
-    '''
-    import pandas as pd
-    data['factor'] = data.AdjClose / data.Close
-
-    cols = [data.Open * data.factor, data.High * data.factor, data.Low * data.factor,
-            data.AdjClose, data.AdjClose, data.Volume]
-
-    dataAj = pd.concat(cols, axis=1)
-
-    dataAj.columns = ["Open", "High", "Low", "Close", "AdjClose", "Volume"]
-    return dataAj
-
-
-def addGap(data):
-    '''
-    Agrega Gap a data ajustada
-    data cols entrada:  Open, High, Low, Close, AdjClose, Volume
-
-    '''
-    data['pctChange'] = data.AdjClose.pct_change()
-    data['Price'] = data.AdjClose
-    data['Mov'] = data.AdjClose.pct_change() * 100
-    data['OpenGap'] = (data.Open / data.Close.shift(1) - 1) * 100
-    data['IntraMov'] = (data.Close / data.Open - 1) * 100
-    return data
-
-
 def addPivots(df):
     '''
     Calculo los puntos pivote en base a un Dataframe.
@@ -136,15 +106,14 @@ def addPivots(df):
 
 
 def addRSI(data, ruedas, ruedas_pend=0):
-    '''
+    """
     Agrega la columna RSI a nuestro dataframe, basado en su columna Close
-    |
-    |_ data:  dataframe
-    |
-    |_ ruedas: integer, La cantidad de ruedas para el cálculo del RSI
-    |
-    |_ ruedas_pend : integer, opcional (Cantidad de ruedas para calcular pendiente del RSI y su divergencia)
-    '''
+
+    :param data: DataFrame con columna Close
+    :param ruedas: integer, La cantidad de ruedas para el cálculo del RSI
+    :param ruedas_pend: integer, opcional (Cantidad de ruedas para calcular pendiente del RSI y su divergencia)
+    :return: DataFrame con RSI
+    """
     import numpy as np
     df = data.copy()
     df['dif'] = df.Close.diff()

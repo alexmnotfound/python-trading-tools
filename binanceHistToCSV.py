@@ -2,7 +2,6 @@ import pandas as pd
 import requests
 import os
 from datetime import datetime
-import tickers as tk
 
 
 def historicData(symbol, interval='1d', startTime=None, endTime=None, limit=1000):
@@ -48,65 +47,75 @@ def historicData(symbol, interval='1d', startTime=None, endTime=None, limit=1000
     return df
 
 
-def dateToMs(date):
+def dateToMs(date, utc=(-3)):
     """
     Cambia fecha a MS
     :param date: str(AAAA-MM-DD)
+    :param utc: time zone
     :return: ms
     """
-    dt_obj = datetime.strptime(f'{date} 00:00:00',
-                               '%Y-%m-%d %H:%M:%S')
+    try:
+        dt_obj = datetime.strptime(f'{date} 00:00:00',
+                                   '%Y-%m-%d %H:%M:%S')
+    except:
+        try:
+            dt_obj = datetime.strptime(f'{date}',
+                                       '%Y-%m-%d %H:%M:%S')
+        except Exception as e:
+            print(f"No se pudo convertir la fecha: {e}")
 
-    millisec = int(dt_obj.timestamp() * 1000) - (3600000*3) #UTC-3
+    millisec = int(dt_obj.timestamp() * 1000) + (3600000*utc)
 
     return millisec
 
 
 def main():
 
-    tickers = tk.tickers
-    #tickers = ('BTCUSDT', 'ETHUSDT')
-    timeframe = '1h'
+    tickers = ['BTCUSDT', 'ETHUSDT']
+    interval = '4h'
 
-    months = (
-        ('2021-01-01', '2021-01-31'),
-        ('2021-02-01', '2021-02-28'),
-        ('2021-03-01', '2021-03-31'),
-        ('2021-04-01', '2021-04-30'),
-        ('2021-05-01', '2021-05-31'),
-        ('2021-06-01', '2021-06-30'),
-        ('2021-07-01', '2021-07-31'),
-        ('2021-08-01', '2021-08-31'),
-        ('2021-09-01', '2021-09-30'),
-        ('2021-10-01', '2021-10-31'),
-        ('2021-11-01', '2021-11-30'),
-        ('2021-12-01', '2021-12-31'),
-    )
+    fromDate = '2021-01-01'
+    toDate = '2021-01-31'
 
     for ticker in tickers:
 
+        # Creo DataFrame
         db = pd.DataFrame()
 
         print(f'Descargando historial de {ticker}')
 
-        for month in months:
-            fromDate = month[0]
-            toDate = month[1]
+        hist = historicData(ticker,
+                            interval=interval,
+                            startTime=f'{dateToMs(fromDate)}',
+                            endTime=f'{dateToMs(toDate)}')
 
+        # Adjunto valores al DataFrame
+        db = db.append(hist)
+
+        # Chequeo si el último row corresponde a la fecha final
+        lastValue = dateToMs(hist.index[-1])
+
+        while lastValue < dateToMs(toDate):
             hist = historicData(ticker,
-                                interval=timeframe,
-                                startTime=f'{dateToMs(fromDate)}',
+                                interval=interval,
+                                startTime=f'{lastValue}',
                                 endTime=f'{dateToMs(toDate)}')
 
             db = db.append(hist)
 
-        print('Listo')
+            lastValue = dateToMs(hist.index[-1])
 
+        # Borro duplicados
         db.drop_duplicates(inplace=True)
-        db.to_csv(os.getcwd() + '/csv/' + f'{ticker}-{timeframe}.csv')
 
-        print(db)
-    print("Descarga finalizada")
+        # Creo csv
+        path = os.getcwd() + '\\csv\\test\\'
+        fileName = f'{ticker}-{interval}.csv'
+        db.to_csv(path + fileName)
+
+        print(f"{fileName} creado en {path}")
+    print("Programa finalizado")
+
 
 if __name__ == '__main__':
     main()
