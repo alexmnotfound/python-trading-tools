@@ -2,6 +2,7 @@
 Armado de DataFrame y exportación a CSV de histórico de precios en Binance para distintos intervalos
 
 @author: alexmnotfound
+credits: gauss314
 """
 
 import pandas as pd
