@@ -2,6 +2,7 @@
 Herramientas para manejo de DataFrames con OHLC
 
 @author: alexmnotfound
+credits: gauss314
 """
 
 def getHistoricoYFinance(symbol, start='2000-01-01', interval='1d', end=None):
