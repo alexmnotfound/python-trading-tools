@@ -1,7 +1,7 @@
 """
 Armado de DataFrame y exportación a CSV de histórico de precios en Binance para distintos intervalos
-
 @author: alexmnotfound
+credits: gauss314
 """
 
 import pandas as pd
@@ -13,7 +13,6 @@ from datetime import datetime
 def historicData(symbol, interval='1d', startTime=None, endTime=None, limit=1000):
     """
         Getting historic Data from Binance API
-
     :param symbol: ticker (BTCUSDT, ETHUSDT, etc..)
     :param interval:
         Minutes: 1m, 2m, 3m, 15m, 30m
@@ -77,16 +76,17 @@ def dateToMs(date, utc=(-3)):
 
 def main():
 
-    tickers = ['BTCUSDT', 'ETHUSDT']
-    interval = '4h'
+    tickers = ['1INCHUSDT', 'ETHUSDT']
+
+    interval = '1h'
 
     fromDate = '2021-01-01'
-    toDate = '2021-01-31'
+    toDate = '2021-08-31'
 
     for ticker in tickers:
 
         # Creo DataFrame
-        db = pd.DataFrame()
+        
 
         print(f'Descargando historial de {ticker}')
 
@@ -96,8 +96,9 @@ def main():
                             endTime=f'{dateToMs(toDate)}')
 
         # Adjunto valores al DataFrame
-        db = db.append(hist)
+        df = hist
 
+        print(df)
         # Chequeo si el último row corresponde a la fecha final
         lastValue = dateToMs(hist.index[-1])
 
@@ -107,17 +108,23 @@ def main():
                                 startTime=f'{lastValue}',
                                 endTime=f'{dateToMs(toDate)}')
 
-            db = db.append(hist)
-
             lastValue = dateToMs(hist.index[-1])
 
+            if lastValue == dateToMs(df.index[-1]):
+                break
+
+            df = df.append(hist)
+
+            print(df)
+
+
         # Borro duplicados
-        db.drop_duplicates(inplace=True)
+        df.drop_duplicates(inplace=True)
 
         # Creo csv
         path = os.getcwd() + '\\csv\\test\\'
         fileName = f'{ticker}-{interval}.csv'
-        db.to_csv(path + fileName)
+        df.to_csv(path + fileName)
 
         print(f"{fileName} creado en {path}")
     print("Programa finalizado")
@@ -125,4 +132,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
