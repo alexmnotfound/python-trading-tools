@@ -69,12 +69,13 @@ def dateToMs(date, utc=(-3)):
         except Exception as e:
             print(f"No se pudo convertir la fecha: {e}")
 
-    millisec = int(dt_obj.timestamp() * 1000) + (3600000 * utc)
+    millisec = int(dt_obj.timestamp() * 1000) + (3600000*utc)
 
     return millisec
 
 
 def main():
+
     tickers = ['1INCHUSDT', 'ETHUSDT']
 
     interval = '1h'
@@ -85,6 +86,7 @@ def main():
     for ticker in tickers:
 
         # Creo DataFrame
+
 
         print(f'Descargando historial de {ticker}')
 
@@ -112,6 +114,7 @@ def main():
                 break
 
             df = df.append(hist)
+
 
         # Borro duplicados
         df.drop_duplicates(inplace=True)

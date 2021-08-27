@@ -1,5 +1,6 @@
 """
 Herramientas para manejo de DataFrames con OHLC
+
 @author: alexmnotfound
 credits: gauss314
 """
@@ -7,6 +8,7 @@ credits: gauss314
 def getHistoricoYFinance(symbol, start='2000-01-01', interval='1d', end=None):
     """
     Descarga de histórico de precios de Yahoo Finance
+
     :param symbol: Ticker a descargar
     :param start: Fecha de inicio (enero del 2000 por defecto)
     :param interval: Timeframe
@@ -23,6 +25,7 @@ def getHistoricoYFinance(symbol, start='2000-01-01', interval='1d', end=None):
 def getHistoricoBinance(symbol, interval='1d', startTime=None, endTime=None, limit=1000):
     '''
     Descarga de histórico de precios de Binance
+
     Minutos: 1m, 2m, 3m, 15m, 30m
     Horas: 1h, 2h, 4h
     Dias: 1d, 3d
@@ -81,6 +84,7 @@ def addPivots(df):
     '''
     Calculo los puntos pivote en base a un Dataframe.
     Los nombres de las columnas del DF deben estar en inglés (Open, High, Low, Close)
+
     '''
     df['PP'] = (df.High.shift(1) + df.Low.shift(1) + df.Close.shift(1)) / 3
     df['R1'] = (2 * df.PP) - df.Low.shift(1)
@@ -105,6 +109,7 @@ def addPivots(df):
 def addRSI(data, ruedas, ruedas_pend=0):
     """
     Agrega la columna RSI a nuestro dataframe, basado en su columna Close
+
     :param data: DataFrame con columna Close
     :param ruedas: integer, La cantidad de ruedas para el cálculo del RSI
     :param ruedas_pend: integer, opcional (Cantidad de ruedas para calcular pendiente del RSI y su divergencia)
